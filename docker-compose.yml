@@ -1,0 +1,42 @@
+version: '3.1'
+
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 56rootoo
+      MONGO_INITDB_ROOT_PASSWORD: superSchweresPW!1
+    networks:
+      main:
+        aliases: ['mongo']
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: 56rootoo
+      ME_CONFIG_MONGODB_ADMINPASSWORD: superSchweresPW!1
+    networks:
+      main:
+        aliases: ['mongo-express']
+
+  fill_db:
+    image: paua/sensorik-fill_db
+    restart: always
+    ports:
+      - 9090:9090
+    environment:
+      fill_monogo_host: mongo
+      fill_monogo_port: 27017
+      fill_monogo_db: bigChart
+      fill_web_port: 9090
+    networks:
+      main:
+        aliases: ['fillMongo']
+        
+networks:
+  main:
