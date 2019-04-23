@@ -1,42 +1,59 @@
 version: '3.1'
-
 services:
 
   mongo:
-    image: mongo
+    image: mongo:4.1
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: 56rootoo
-      MONGO_INITDB_ROOT_PASSWORD: superSchweresPW!1
+    ports:
+      - 27017:27017
+    volumes: 
+      - mongo:/data/db
     networks:
       main:
         aliases: ['mongo']
 
-  mongo-express:
-    image: mongo-express
+  rest:
+    image: paua/sensorik-rest:latest
     restart: always
-    ports:
-      - 8081:8081
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: 56rootoo
-      ME_CONFIG_MONGODB_ADMINPASSWORD: superSchweresPW!1
+      rest_monogo_host: mongo
+      rest_monogo_port: 27017
+      rest_monogo_db: "bigChart"
+      rest_port: 8080
+      ENV: "PROD"
+    ports:
+      - 8080:8080
     networks:
       main:
-        aliases: ['mongo-express']
+        aliases: ['rest']
 
   fill_db:
-    image: paua/sensorik-fill_db
+    image: paua/sensorik-fill_db:latest
     restart: always
-    ports:
-      - 9090:9090
     environment:
       fill_monogo_host: mongo
       fill_monogo_port: 27017
-      fill_monogo_db: bigChart
-      fill_web_port: 9090
+      fill_monogo_db: "bigChart"
+      fill_website_port: 3000
+      ENV: "PROD"
+    ports:
+      - 3000:3000
     networks:
       main:
-        aliases: ['fillMongo']
-        
+        aliases: ['fill_db']
+      
+  iot_chart:
+    image: paua/sensorik-iot_chart:latest
+    restart: always
+    environment:
+      ENV: "PROD"
+    ports:
+      - 4200:4200
+    networks:
+      main:
+        aliases: ['iot_chart']
+volumes:
+  mongo:
+
 networks:
   main:
