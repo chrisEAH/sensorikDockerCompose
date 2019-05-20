@@ -6,9 +6,8 @@ services:
     restart: always
     ports:
       - 27017:27017
-    networks:
-      main:
-        aliases: ['mongo']
+    volumes:
+      - mongo:/data/db
 
   mongo-express:
     image: mongo-express
@@ -59,6 +58,9 @@ services:
     networks:
       main:
         aliases: ['iot_chart']
+        
+volumes:
+  mongo:
 
 networks:
   main:
